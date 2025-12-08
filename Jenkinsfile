@@ -11,7 +11,7 @@ pipeline {
 
          stage('Build image'){
            steps{
-             sh "docker build -t=nastialucky/selenium ."
+             sh "docker build -t=nastialucky/selenium:latest ."
            }
         }
 
@@ -20,8 +20,10 @@ pipeline {
         DOCKER_HUB=credentials('dockerhub')
         }
            steps{
-           sh  'docker login -u ${DOCKER_HUB_USR} -p ${DOCKER_HUB_PSW}'
-            sh "docker push nastialucky/selenium""
+           sh  'echo ${DOCKER_HUB_PSW} | docker login -u ${DOCKER_HUB_USR} --password-stdin'
+           sh "docker push nastialucky/selenium:latest"
+           sh "docker tag nastialucky/selenium:latest nastialucky/selenium:${env.BUILD_NUMBER}"
+           sh "docker push nastialucky/selenium:${env.BUILD_NUMBER}"
            }
         }
     }
